@@ -41,6 +41,8 @@ contract ERC7583 is IERC7583Metadata {
 	// Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
+    mapping(uint256 => bool) public inscribed;
+
     constructor(
         string memory name_,
         string memory symbol_,
@@ -228,8 +230,10 @@ contract ERC7583 is IERC7583Metadata {
     }
 
     /// @notice This is the entry point for users to inscribe data into event data.
+    /// @dev ECDSA (Elliptic Curve Digital Signature Algorithm) can be used to ensure that the inscribed data is correct.
     function inscribe(uint256 insId, bytes calldata data) external {
 		require(_isApprovedOrOwner(msg.sender, insId), "ERC7583: caller is not token owner nor approved");
+        require(!inscribed[insId], "This inscription has been inscribed");
 		emit Inscribe(insId, data);
 	}
 
